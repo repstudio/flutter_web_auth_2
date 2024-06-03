@@ -42,13 +42,35 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
 
           callbacks[callbackUrlScheme] = resultCallback
 
-          val intent = CustomTabsIntent.Builder().build()
-          val keepAliveIntent = Intent(context, KeepAliveService::class.java)
+            val preferEphemeral =options["preferEphemeral"] as Boolean
+            if(preferEphemeral) {
+                try {
+                    packageManager.getPackageInfo("com.android.chrome", PackageManager.GET_ACTIVITIES);
 
-          intent.intent.addFlags(options["intentFlags"] as Int)
-          intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
+                    Intent intent = new Intent(Intent.ACTION_VIEW, url);
+                    intent.setPackage("com.android.chrome");
+                    intent.putExtra("com.android.browser.application_id", "com.android.chrome");
+                    intent.putExtra("create_new_tab", true);
+                    intent.putExtra("org.chromium.chrome.browser.incognito", true);
+                    startActivity(intent);
+                } catch (PackageManager.NameNotFoundException e) {
+                    val intent = CustomTabsIntent.Builder().build()
+                    val keepAliveIntent = Intent(context, KeepAliveService::class.java)
 
-          intent.launchUrl(context!!, url)
+                    intent.intent.addFlags(options["intentFlags"] as Int)
+                    intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
+
+                    intent.launchUrl(context!!, url)
+                }
+            } else {
+                val intent = CustomTabsIntent.Builder().build()
+                val keepAliveIntent = Intent(context, KeepAliveService::class.java)
+
+                intent.intent.addFlags(options["intentFlags"] as Int)
+                intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
+
+                intent.launchUrl(context!!, url)
+            }
         }
         "cleanUpDanglingCalls" -> {
           callbacks.forEach{ (_, danglingResultCallback) ->
