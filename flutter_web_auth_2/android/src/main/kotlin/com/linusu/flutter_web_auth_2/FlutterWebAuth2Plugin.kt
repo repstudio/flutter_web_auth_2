@@ -45,15 +45,16 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
             val preferEphemeral =options["preferEphemeral"] as Boolean
             if(preferEphemeral) {
                 try {
+                    val packageManager: PackageManager = context.getPackageManager()
                     packageManager.getPackageInfo("com.android.chrome", PackageManager.GET_ACTIVITIES);
 
-                    Intent intent = new Intent(Intent.ACTION_VIEW, url);
-                    intent.setPackage("com.android.chrome");
-                    intent.putExtra("com.android.browser.application_id", "com.android.chrome");
-                    intent.putExtra("create_new_tab", true);
-                    intent.putExtra("org.chromium.chrome.browser.incognito", true);
-                    startActivity(intent);
-                } catch (PackageManager.NameNotFoundException e) {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    intent.setPackage("com.android.chrome")
+                    intent.putExtra("com.android.browser.application_id", "com.android.chrome")
+                    intent.putExtra("create_new_tab", true)
+                    intent.putExtra("org.chromium.chrome.browser.incognito", true)
+                    context.startActivity(intent)
+                } catch (e: PackageManager.NameNotFoundException) {
                     val intent = CustomTabsIntent.Builder().build()
                     val keepAliveIntent = Intent(context, KeepAliveService::class.java)
 
