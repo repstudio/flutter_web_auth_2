@@ -2,6 +2,7 @@ package com.linusu.flutter_web_auth_2
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 
 import androidx.browser.customtabs.CustomTabsIntent
@@ -40,20 +41,20 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
           val callbackUrlScheme = call.argument<String>("callbackUrlScheme")!!
           val options = call.argument<Map<String, Any>>("options")!!
 
-          callbacks[callbackUrlScheme] = resultCallback
+            callbacks[callbackUrlScheme] = resultCallback
 
-            val preferEphemeral =options["preferEphemeral"] as Boolean
-            if(preferEphemeral) {
+            val preferEphemeral = options["preferEphemeral"] as Boolean
+            if (preferEphemeral) {
                 try {
-                    val packageManager: PackageManager = context.getPackageManager()
-                    packageManager.getPackageInfo("com.android.chrome", PackageManager.GET_ACTIVITIES);
+                    val intent = Intent(Intent.ACTION_VIEW, url)
 
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    context?.packageManager?.getPackageInfo("com.android.chrome", PackageManager.GET_ACTIVITIES)
+
                     intent.setPackage("com.android.chrome")
                     intent.putExtra("com.android.browser.application_id", "com.android.chrome")
                     intent.putExtra("create_new_tab", true)
                     intent.putExtra("org.chromium.chrome.browser.incognito", true)
-                    context.startActivity(intent)
+                    context?.startActivity(intent)
                 } catch (e: PackageManager.NameNotFoundException) {
                     val intent = CustomTabsIntent.Builder().build()
                     val keepAliveIntent = Intent(context, KeepAliveService::class.java)
@@ -64,6 +65,17 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
                     intent.launchUrl(context!!, url)
                 }
             } else {
+                val intent = CustomTabsIntent.Builder().build()
+                val keepAliveIntent = Intent(context, KeepAliveService::class.java)
+
+                intent.intent.addFlags(options["intentFlags"] as Int)
+                intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
+
+                intent.launchUrl(context!!, url)
+            }
+        }
+
+    } else {
                 val intent = CustomTabsIntent.Builder().build()
                 val keepAliveIntent = Intent(context, KeepAliveService::class.java)
 
