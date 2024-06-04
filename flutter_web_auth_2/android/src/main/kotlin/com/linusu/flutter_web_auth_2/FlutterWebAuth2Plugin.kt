@@ -51,7 +51,7 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
             intent.intent.putExtra("com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB", true)
             intent.launchUrl(context!!, url)
 
-//            val preferEphemeral = options["preferEphemeral"] as Boolean
+            val preferEphemeral = options["preferEphemeral"] as Boolean
 //            if (preferEphemeral) {
 //                try {
 //                    val intent = Intent(Intent.ACTION_VIEW, url)
