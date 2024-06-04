@@ -43,15 +43,18 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
 
             callbacks[callbackUrlScheme] = resultCallback
 
-            val intent = CustomTabsIntent.Builder().build()
-            val keepAliveIntent = Intent(context, KeepAliveService::class.java)
-
-            intent.intent.addFlags(options["intentFlags"] as Int)
-            intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
-            intent.intent.putExtra("com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB", true)
-            intent.launchUrl(context!!, url)
+//            val intent = CustomTabsIntent.Builder().build()
+//            val keepAliveIntent = Intent(context, KeepAliveService::class.java)
+//
+//            intent.intent.addFlags(options["intentFlags"] as Int)
+//            intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
+//            intent.intent.putExtra("com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB", true)
+//            intent.launchUrl(context!!, url)
 
             val preferEphemeral = options["preferEphemeral"] as Boolean
+            val intent = Intent(Intent.ACTION_VIEW, url)
+
+            context?.packageManager?.getPackageInfo("com.android.chrome", PackageManager.GET_ACTIVITIES)
 //            if (preferEphemeral) {
 //                try {
 //                    val intent = Intent(Intent.ACTION_VIEW, url)
