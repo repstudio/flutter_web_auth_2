@@ -2,17 +2,12 @@ package com.linusu.flutter_web_auth_2
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
-
-import androidx.browser.customtabs.CustomTabsIntent
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
-import io.flutter.plugin.common.MethodChannel.Result
 
 class FlutterWebAuth2Plugin(private var context: Context? = null, private var channel: MethodChannel? = null): MethodCallHandler, FlutterPlugin {
   companion object {
@@ -55,7 +50,7 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
             println("Ephemeral$preferEphemeral")
            // if (preferEphemeral) {
                 val intent = Intent(Intent.ACTION_VIEW, url)
-
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
 //                context?.packageManager?.getPackageInfo(
 //                    "com.android.chrome",
 //                    PackageManager.GET_ACTIVITIES
