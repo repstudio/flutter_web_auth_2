@@ -48,7 +48,7 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
 
             intent.intent.addFlags(options["intentFlags"] as Int)
             intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
-
+            intent.intent.putExtra("com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB", true)
             intent.launchUrl(context!!, url)
 
 //            val preferEphemeral = options["preferEphemeral"] as Boolean
