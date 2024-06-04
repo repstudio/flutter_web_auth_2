@@ -60,6 +60,11 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
                     "com.android.chrome",
                     PackageManager.GET_ACTIVITIES
                 )
+                intent.setPackage("com.android.chrome")
+                    intent.putExtra("com.android.browser.application_id", "com.android.chrome")
+                    intent.putExtra("create_new_tab", true)
+                    intent.putExtra("org.chromium.chrome.browser.incognito", true)
+                    context?.startActivity(intent)
             }
 //            if (preferEphemeral) {
 //                try {
