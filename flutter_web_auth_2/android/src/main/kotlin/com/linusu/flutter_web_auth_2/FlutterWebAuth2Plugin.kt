@@ -37,42 +37,50 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
   override fun onMethodCall(call: MethodCall, resultCallback: Result) {
     when (call.method) {
         "authenticate" -> {
-          val url = Uri.parse(call.argument("url"))
-          val callbackUrlScheme = call.argument<String>("callbackUrlScheme")!!
-          val options = call.argument<Map<String, Any>>("options")!!
+            val url = Uri.parse(call.argument("url"))
+            val callbackUrlScheme = call.argument<String>("callbackUrlScheme")!!
+            val options = call.argument<Map<String, Any>>("options")!!
 
             callbacks[callbackUrlScheme] = resultCallback
 
-            val preferEphemeral = options["preferEphemeral"] as Boolean
-            if (preferEphemeral) {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, url)
+            val intent = CustomTabsIntent.Builder().build()
+            val keepAliveIntent = Intent(context, KeepAliveService::class.java)
 
-                    context?.packageManager?.getPackageInfo("com.android.chrome", PackageManager.GET_ACTIVITIES)
+            intent.intent.addFlags(options["intentFlags"] as Int)
+            intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
 
-                    intent.setPackage("com.android.chrome")
-                    intent.putExtra("com.android.browser.application_id", "com.android.chrome")
-                    intent.putExtra("create_new_tab", true)
-                    intent.putExtra("org.chromium.chrome.browser.incognito", true)
-                    context?.startActivity(intent)
-                } catch (e: PackageManager.NameNotFoundException) {
-                    val intent = CustomTabsIntent.Builder().build()
-                    val keepAliveIntent = Intent(context, KeepAliveService::class.java)
+            intent.launchUrl(context!!, url)
 
-                    intent.intent.addFlags(options["intentFlags"] as Int)
-                    intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
-
-                    intent.launchUrl(context!!, url)
-                }
-            } else {
-                val intent = CustomTabsIntent.Builder().build()
-                val keepAliveIntent = Intent(context, KeepAliveService::class.java)
-
-                intent.intent.addFlags(options["intentFlags"] as Int)
-                intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
-                intent.intent.putExtra("com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB", true)
-                intent.launchUrl(context!!, url)
-            }
+//            val preferEphemeral = options["preferEphemeral"] as Boolean
+//            if (preferEphemeral) {
+//                try {
+//                    val intent = Intent(Intent.ACTION_VIEW, url)
+//
+//                    context?.packageManager?.getPackageInfo("com.android.chrome", PackageManager.GET_ACTIVITIES)
+//
+//                    intent.setPackage("com.android.chrome")
+//                    intent.putExtra("com.android.browser.application_id", "com.android.chrome")
+//                    intent.putExtra("create_new_tab", true)
+//                    intent.putExtra("org.chromium.chrome.browser.incognito", true)
+//                    context?.startActivity(intent)
+//                } catch (e: PackageManager.NameNotFoundException) {
+//                    val intent = CustomTabsIntent.Builder().build()
+//                    val keepAliveIntent = Intent(context, KeepAliveService::class.java)
+//
+//                    intent.intent.addFlags(options["intentFlags"] as Int)
+//                    intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
+//
+//                    intent.launchUrl(context!!, url)
+//                }
+//            } else {
+//                val intent = CustomTabsIntent.Builder().build()
+//                val keepAliveIntent = Intent(context, KeepAliveService::class.java)
+//
+//                intent.intent.addFlags(options["intentFlags"] as Int)
+//                intent.intent.putExtra("android.support.customtabs.extra.KEEP_ALIVE", keepAliveIntent)
+//                intent.intent.putExtra("com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB", true)
+//                intent.launchUrl(context!!, url)
+//            }
         }
         "cleanUpDanglingCalls" -> {
           callbacks.forEach{ (_, danglingResultCallback) ->
