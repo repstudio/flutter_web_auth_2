@@ -52,9 +52,15 @@ class FlutterWebAuth2Plugin(private var context: Context? = null, private var ch
 //            intent.launchUrl(context!!, url)
 
             val preferEphemeral = options["preferEphemeral"] as Boolean
-            val intent = Intent(Intent.ACTION_VIEW, url)
+            println("Ephemeral$preferEphemeral")
+            if (preferEphemeral) {
+                val intent = Intent(Intent.ACTION_VIEW, url)
 
-            context?.packageManager?.getPackageInfo("com.android.chrome", PackageManager.GET_ACTIVITIES)
+                context?.packageManager?.getPackageInfo(
+                    "com.android.chrome",
+                    PackageManager.GET_ACTIVITIES
+                )
+            }
 //            if (preferEphemeral) {
 //                try {
 //                    val intent = Intent(Intent.ACTION_VIEW, url)
